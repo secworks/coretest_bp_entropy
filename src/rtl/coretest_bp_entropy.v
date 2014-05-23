@@ -86,7 +86,7 @@ module coretest_bp_entropy(
   reg           ent_we;
   reg [7 : 0]   ent_address;
   reg [31 : 0]  ent_write_data;
-  wire [31 : 0] ent_read_data;
+  wire [15 : 0] ent_read_data;
   wire [7 : 0]  ent_debug;
   
   
@@ -152,7 +152,7 @@ module coretest_bp_entropy(
                   .nreset(reset_n), 
                   .cs(ent_cs),
                   .we(ent_we),
-                  .addr(ent_addr),
+                  .addr(ent_address),
                   .dwrite(ent_write_data),
                   .dread(ent_read_data),
                   .debug(ent_debug)
@@ -176,6 +176,10 @@ module coretest_bp_entropy(
       uart_address       = 8'h00;
       uart_write_data    = 32'h00000000;
 
+      ent_cs             = 0;
+      ent_we             = 0;
+      ent_address        = 8'h00;
+      ent_write_data     = 32'h00000000;
 
       case (coretest_address[15 : 8])
         UART_ADDR_PREFIX:
