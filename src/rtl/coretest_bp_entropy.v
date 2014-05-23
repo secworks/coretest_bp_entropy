@@ -1,11 +1,8 @@
 //======================================================================
 //
-// coretest_hashes.v
-// -----------------
-// Top level wrapper that creates the Cryptech coretest system.
-// The wrapper contains instances of external interface, coretest
-// and the core to be tested. And if more than one core is
-// present the wrapper also includes address and data muxes.
+// coretest_bp_entropy.v
+// ---------------------
+// Top level module for the fpga entropy tester.
 //
 //
 // Author: Joachim Strombergson
@@ -39,25 +36,23 @@
 //
 //======================================================================
 
-module coretest_hashes(
-                       input wire          clk,
-                       input wire          reset_n,
+module coretest_bp_entropy(
+                           input wire          clk,
+                           input wire          reset_n,
                        
-                       // External interface.
-                       input wire          rxd,
-                       output wire         txd,
-                       
-                       output wire [7 : 0] debug
-                      );
+                           // External interface.
+                           input wire          rxd,
+                           output wire         txd,
+                           
+                           output wire [7 : 0] debug
+                          );
 
   
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   parameter UART_ADDR_PREFIX   = 8'h00;
-  parameter SHA1_ADDR_PREFIX   = 8'h10;
-  parameter SHA256_ADDR_PREFIX = 8'h20;
-  parameter SHA512_ADDR_PREFIX = 8'h30;
+  parameter ENT_ADDR_PREFIX    = 8'h10;
   
   
   //----------------------------------------------------------------
@@ -86,33 +81,6 @@ module coretest_hashes(
   wire [31 : 0] uart_read_data;
   wire          uart_error;
   wire [7 : 0]  uart_debug;
-
-  // sha1 connections.
-  reg           sha1_cs;
-  reg           sha1_we;
-  reg [7 : 0]   sha1_address;
-  reg [31 : 0]  sha1_write_data;
-  wire [31 : 0] sha1_read_data;
-  wire          sha1_error;
-  wire [7 : 0]  sha1_debug;
-
-  // sha256 connections.
-  reg           sha256_cs;
-  reg           sha256_we;
-  reg [7 : 0]   sha256_address;
-  reg [31 : 0]  sha256_write_data;
-  wire [31 : 0] sha256_read_data;
-  wire          sha256_error;
-  wire [7 : 0]  sha256_debug;
-
-  // sha512 connections.
-  reg           sha512_cs;
-  reg           sha512_we;
-  reg [7 : 0]   sha512_address;
-  reg [31 : 0]  sha512_write_data;
-  wire [31 : 0] sha512_read_data;
-  wire          sha512_error;
-  wire [7 : 0]  sha512_debug;
   
   
   //----------------------------------------------------------------
@@ -172,57 +140,6 @@ module coretest_hashes(
             .debug(uart_debug)
            );
 
-  
-  sha1 sha1(
-            // Clock and reset.
-            .clk(clk),
-            .reset_n(reset_n),
-            
-            // Control.
-            .cs(sha1_cs),
-            .we(sha1_we),
-              
-            // Data ports.
-            .address(sha1_address),
-            .write_data(sha1_write_data),
-            .read_data(sha1_read_data),
-            .error(sha1_error)
-           );
-
-  
-  sha256 sha256(
-                // Clock and reset.
-                .clk(clk),
-                .reset_n(reset_n),
-                
-                // Control.
-                .cs(sha256_cs),
-                .we(sha256_we),
-              
-                // Data ports.
-                .address(sha256_address),
-                .write_data(sha256_write_data),
-                .read_data(sha256_read_data),
-                .error(sha256_error)
-               );
-
-  
-  sha512 sha512(
-                // Clock and reset.
-                .clk(clk),
-                .reset_n(reset_n),
-
-                // Control.
-                .cs(sha512_cs),
-                .we(sha512_we),
-
-                // Data ports.
-                .address(sha512_address),
-                .write_data(sha512_write_data),
-                .read_data(sha512_read_data),
-                .error(sha512_error)
-               );
-
 
   //----------------------------------------------------------------
   // address_mux
@@ -241,21 +158,6 @@ module coretest_hashes(
       uart_address       = 8'h00;
       uart_write_data    = 32'h00000000;
 
-      sha1_cs            = 0;
-      sha1_we            = 0;
-      sha1_address       = 8'h00;
-      sha1_write_data    = 32'h00000000;
-
-      sha256_cs          = 0;
-      sha256_we          = 0;
-      sha256_address     = 8'h00;
-      sha256_write_data  = 32'h00000000;
-
-      sha512_cs          = 0;
-      sha512_we          = 0;
-      sha512_address     = 8'h00;
-      sha512_write_data  = 32'h00000000;
-
 
       case (coretest_address[15 : 8])
         UART_ADDR_PREFIX:
@@ -267,40 +169,6 @@ module coretest_hashes(
             coretest_read_data = uart_read_data;
             coretest_error     = uart_error;
           end
-
-        
-        SHA1_ADDR_PREFIX:
-          begin
-            sha1_cs            = coretest_cs;
-            sha1_we            = coretest_we;
-            sha1_address       = coretest_address[7 : 0];
-            sha1_write_data    = coretest_write_data;
-            coretest_read_data = sha1_read_data;
-            coretest_error     = sha1_error;
-          end
-
-        
-        SHA256_ADDR_PREFIX:
-          begin
-            sha256_cs          = coretest_cs;
-            sha256_we          = coretest_we;
-            sha256_address     = coretest_address[7 : 0];
-            sha256_write_data  = coretest_write_data;
-            coretest_read_data = sha256_read_data;
-            coretest_error     = sha256_error;
-          end
-
-
-        SHA512_ADDR_PREFIX:
-          begin
-            sha512_cs          = coretest_cs;
-            sha512_we          = coretest_we;
-            sha512_address     = coretest_address[7 : 0];
-            sha512_write_data  = coretest_write_data;
-            coretest_read_data = sha512_read_data;
-            coretest_error     = sha512_error;
-          end
-        
         
         default:
           begin
@@ -308,8 +176,8 @@ module coretest_hashes(
       endcase // case (coretest_address[15 : 8])
     end // address_mux
   
-endmodule // coretest_hashes
+endmodule // coretest_bp_entropy
 
 //======================================================================
-// EOF coretest_hashes.v
+// EOF coretest_bp_entropy.v
 //======================================================================
