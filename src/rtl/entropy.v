@@ -78,7 +78,7 @@ module entropy(input wire          clk,
 
           if (delay_ctr_reg == 32'h00000000)
             begin
-              debug_reg <= rng1;
+              debug_reg <= n[7 : 0];
             end
           
 	  if(cs & we) begin
