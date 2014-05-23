@@ -5,19 +5,19 @@
 // digital HW based entropy generator.
 //
 //
-// (c) 2014, Berndt Paysan.
+// (c) 2014, Berndt Paysan, Joachim Strömbergson
 //
 //======================================================================
 
-module entropy(input wire         clk, 
-               input wire         nreset, 
+module entropy(input wire          clk, 
+               input wire          nreset, 
 
-               input wire         cs,
-               Input wire         we,
-               input wire [7:0]   addr,
-               input wire [15:0]  dwrite,
-               output wire [15:0] dread,
-               output wire        debug
+               input wire          cs,
+               Input wire          we,
+               input wire [7:0]    addr,
+               input wire [15:0]   dwrite,
+               output wire [15:0]  dread,
+               output wire [7 : 0] debug
               );
 
   //----------------------------------------------------------------
@@ -110,7 +110,7 @@ module entropy(input wire         clk,
 
 
   //----------------------------------------------------------------
-w  // delay_ctr
+  // delay_ctr
   //
   // Simple counter that counts to DELAY_MAC. Used to slow down
   // the debug port updates to human speeds.
