@@ -19,61 +19,116 @@ module entropy(input wire         clk,
                output wire [15:0] dread,
                output wire        debug
               );
+
+  //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  parameter DELAY_MAX             = 32'h004c4b40;
+
+  parameter ADDR_ENT_WR_RNG1      = 8'h00;
+  parameter ADDR_ENT_WR_RNG2      = 8'h01;
   
-  reg [7:0] 	 rng1, rng2; // must be inverse to each other
+  parameter ADDR_ENT_RD_RNG1_RNG2 = 8'h10;
+  parameter ADDR_ENT_RD_P         = 8'h11;
+  parameter ADDR_ENT_RD_N         = 8'h12;
+
+  
+  //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  reg [7:0]    rng1, rng2; // must be inverse to each other
+  reg [31 : 0] delay_ctr_reg;  
+  reg [31 : 0] delay_ctr_new;  
+  reg [15 : 0] debug_reg;
+
   wire [15:0] 	 p, n;
-
   reg [15 : 0] tmp_dread;
-
-  aasign dread = tmp_dread;
-  assign debug = rng1;
-  
-  genvar 	 i;
   
   
+  //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  genvar i;
   generate
     for(i=0; i<16; i=i+1) begin: tworoscs
       rosc px(clk, nreset, rng1, rng2, p[i]);
       rosc nx(clk, nreset, rng1, rng2, n[i]);
     end
   endgenerate
+
   
+  //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  aasign dread = tmp_dread;
+  assign debug = rng1;
+
+  
+  //----------------------------------------------------------------
+  // reg updates
+  //----------------------------------------------------------------
   always @(posedge clk or negedge nreset)
     begin
-      if(!nreset) begin
-	rng1 <= 8'h55;
-	rng2 <= 8'haa;
-      end else begin
-	if(cs & we) begin
-	  case(addr)
-	    8'h00: begin
-	      rng1 <= dwrite[15:8];
-	    end
-            
-	    8'h01: begin
-	      rng2 <= dwrite[7:0];
-	    end
-	  endcase // case ({ addr[7:1], 1'b0 })
-	end
-       end // else: !if(!nreset)
+      if(!nreset) 
+        begin
+	  rng1          <= 8'h55;
+	  rng2          <= 8'haa;
+          delay_ctr_reg <= 32'h00000000;
+          debug_reg     <= 16'h0000;
+        end 
+      else 
+        begin
+          delay_ctr_reg <= delay_crt_new;
+
+          if (delay_ctr_reg == 32'h00000000)
+            begin
+              debug_reg <= rng1;
+            end
+          
+	  if(cs & we) begin
+	    case(addr)
+	      ADDR_ENT_WR_RNG1: rng1 <= dwrite[15:8];
+	      ADDR_ENT_WR_RNG2: rng2 <= dwrite[7:0];
+              default:
+	    endcase
+	  end
+        end // else: !if(!nreset)
     end
+
   
+  //----------------------------------------------------------------
+  // read_data
+  //----------------------------------------------------------------
   always @*
-    begin
+    begin : read_data
       tmp_dread = 16'h0000;
 
       if(cs & ~we)
         case(addr)
-	  8'h10: tmp_dread = { rng1, rng2 };
-	  8'h11: tmp_dread = p;
-	  8'h12: tmp_dread = n;
-         endcase // case ({ addr[7:1], 1'b0 })
+	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = { rng1, rng2 };
+	  ADDR_ENT_RD_P:         tmp_dread = p;
+	  ADDR_ENT_RD_N:         tmp_dread = n;
+          default:
+         endcase
     end
+
+
+  //----------------------------------------------------------------
+w  // delay_ctr
+  //
+  // Simple counter that counts to DELAY_MAC. Used to slow down
+  // the debug port updates to human speeds.
+  //----------------------------------------------------------------
+  always @*
+    begin : delay_ctr
+      if (delay_ctr_reg == DELAY_MAX)
+        begin
+          delay_ctr_new = 32'h00000000;
+        end
+      else
+        begin
+          delay_ctr_new = delay_ctr_reg + 1'b1;
+        end
+    end // delay_ctr
   
 endmodule // entropy
 
 //======================================================================
 // EOF entropy.v
 //======================================================================
-
-
