@@ -9,48 +9,63 @@
 //
 //======================================================================
 
-module entropy(clk, nreset, sel, addr, r, w, dwrite, dread);
-   input clk, nreset, sel, r;
-   input [7:0] addr;
-   input [15:0] dwrite;
-   input [1:0] 	w;
-   output reg [15:0] dread;
+module entropy(input wire         clk, 
+               input wire         nreset, 
 
-   reg [7:0] 	 rng1, rng2; // must be inverse to each other
-   wire [15:0] 	 p, n;
+               input wire         cs,
+               Input wire         we,
+               input wire [7:0]   addr,
+               input wire [15:0]  dwrite,
+               output wire [15:0] dread
+              );
+  
+  reg [7:0] 	 rng1, rng2; // must be inverse to each other
+  wire [15:0] 	 p, n;
 
-   genvar 	 i;
+  reg [15 : 0] tmp_dread;
 
-   generate
-      for(i=0; i<16; i=i+1) begin: tworoscs
-	 rosc px(clk, nreset, rng1, rng2, p[i]);
-	 rosc nx(clk, nreset, rng1, rng2, n[i]);
-      end
-   endgenerate
-
-   always @(posedge clk or negedge nreset)
-     if(!nreset) begin
+  aasign dread = tmp_dread;
+  
+  genvar 	 i;
+  
+  
+  generate
+    for(i=0; i<16; i=i+1) begin: tworoscs
+      rosc px(clk, nreset, rng1, rng2, p[i]);
+      rosc nx(clk, nreset, rng1, rng2, n[i]);
+    end
+  endgenerate
+  
+  always @(posedge clk or negedge nreset)
+    begin
+      if(!nreset) begin
 	rng1 <= 8'h55;
 	rng2 <= 8'haa;
-     end else begin
-	if(sel) begin
-	   case({ addr[7:1], 1'b0 })
-	     8'h00: begin
-		if(w[1]) rng1 <= dwrite[15:8];
-		if(w[0]) rng2 <= dwrite[7:0];
-	     end
-	   endcase // case ({ addr[7:1], 1'b0 })
+      end else begin
+	if(cs & we) begin
+	  case(addr)
+	    8'h00: begin
+	      rng1 <= dwrite[15:8];
+	    end
+            
+	    8'h01: begin
+	      rng2 <= dwrite[7:0];
+	    end
+	  endcase // case ({ addr[7:1], 1'b0 })
 	end
-     end // else: !if(!nreset)
-
-   always @*
-     if(r & sel)
-       case({ addr[7:1], 1'b0 })
-	 8'h00: dread = { rng1, rng2 };
-	 8'h04: dread = p;
-	 8'h06: dread = n;
-       endcase // case ({ addr[7:1], 1'b0 })
-   
+       end // else: !if(!nreset)
+    end
+  
+  always @*
+    begin
+      if(cs & ~we)
+        case(addr)
+	  8'h10: tmp_dread = { rng1, rng2 };
+	  8'h11: tmp_dread = p;
+	  8'h12: tmp_dread = n;
+         endcase // case ({ addr[7:1], 1'b0 })
+    end
+  
 endmodule // entropy
 
 //======================================================================
