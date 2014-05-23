@@ -13,7 +13,7 @@ module entropy(input wire          clk,
                input wire          nreset, 
 
                input wire          cs,
-               Input wire          we,
+               input wire          we,
                input wire [7:0]    addr,
                input wire [15:0]   dwrite,
                output wire [15:0]  dread,
@@ -37,7 +37,7 @@ module entropy(input wire          clk,
   reg [7:0]    rng1, rng2; // must be inverse to each other
   reg [31 : 0] delay_ctr_reg;  
   reg [31 : 0] delay_ctr_new;  
-  reg [15 : 0] debug_reg;
+  reg [7 : 0]  debug_reg;
 
   wire [15:0] 	 p, n;
   reg [15 : 0] tmp_dread;
@@ -56,8 +56,8 @@ module entropy(input wire          clk,
   
   //----------------------------------------------------------------
   //----------------------------------------------------------------
-  aasign dread = tmp_dread;
-  assign debug = rng1;
+  assign dread = tmp_dread;
+  assign debug = debug_reg;
 
   
   //----------------------------------------------------------------
@@ -70,11 +70,11 @@ module entropy(input wire          clk,
 	  rng1          <= 8'h55;
 	  rng2          <= 8'haa;
           delay_ctr_reg <= 32'h00000000;
-          debug_reg     <= 16'h0000;
+          debug_reg     <= 8'h00;
         end 
       else 
         begin
-          delay_ctr_reg <= delay_crt_new;
+          delay_ctr_reg <= delay_ctr_new;
 
           if (delay_ctr_reg == 32'h00000000)
             begin
@@ -85,7 +85,7 @@ module entropy(input wire          clk,
 	    case(addr)
 	      ADDR_ENT_WR_RNG1: rng1 <= dwrite[15:8];
 	      ADDR_ENT_WR_RNG2: rng2 <= dwrite[7:0];
-              default:
+              default:;
 	    endcase
 	  end
         end // else: !if(!nreset)
@@ -104,7 +104,7 @@ module entropy(input wire          clk,
 	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = { rng1, rng2 };
 	  ADDR_ENT_RD_P:         tmp_dread = p;
 	  ADDR_ENT_RD_N:         tmp_dread = n;
-          default:
+          default:;
          endcase
     end
 
