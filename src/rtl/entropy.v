@@ -16,7 +16,8 @@ module entropy(input wire         clk,
                Input wire         we,
                input wire [7:0]   addr,
                input wire [15:0]  dwrite,
-               output wire [15:0] dread
+               output wire [15:0] dread,
+               output wire        debug
               );
   
   reg [7:0] 	 rng1, rng2; // must be inverse to each other
@@ -25,6 +26,7 @@ module entropy(input wire         clk,
   reg [15 : 0] tmp_dread;
 
   aasign dread = tmp_dread;
+  assign debug = rng1;
   
   genvar 	 i;
   
@@ -58,6 +60,8 @@ module entropy(input wire         clk,
   
   always @*
     begin
+      tmp_dread = 16'h0000;
+
       if(cs & ~we)
         case(addr)
 	  8'h10: tmp_dread = { rng1, rng2 };
