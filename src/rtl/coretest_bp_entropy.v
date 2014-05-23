@@ -81,12 +81,19 @@ module coretest_bp_entropy(
   wire [31 : 0] uart_read_data;
   wire          uart_error;
   wire [7 : 0]  uart_debug;
+
+  reg           ent_cs;
+  reg           ent_we;
+  reg [7 : 0]   ent_address;
+  reg [31 : 0]  ent_write_data;
+  wire [31 : 0] ent_read_data;
+  wire [7 : 0]  ent_debug;
   
   
   //----------------------------------------------------------------
   // Concurrent assignment.
   //----------------------------------------------------------------
-  assign debug = uart_debug;
+  assign debug = ent_debug;
   
   
   //----------------------------------------------------------------
@@ -141,6 +148,17 @@ module coretest_bp_entropy(
            );
 
 
+  entropy entropy(.clk(clk), 
+                  .nreset(reset_n), 
+                  .cs(ent_cs),
+                  .we(ent_we),
+                  .addr(ent_addr),
+                  .dwrite(ent_write_data),
+                  .dread(ent_read_data),
+                  .debug(ent_debug)
+                 );
+
+  
   //----------------------------------------------------------------
   // address_mux
   //
@@ -168,6 +186,16 @@ module coretest_bp_entropy(
             uart_write_data    = coretest_write_data;
             coretest_read_data = uart_read_data;
             coretest_error     = uart_error;
+          end
+        
+        ENT_ADDR_PREFIX:
+          begin
+            ent_cs             = coretest_cs;
+            ent_we             = coretest_we;
+            ent_address        = coretest_address[7 : 0];
+            ent_write_data     = coretest_write_data[15 : 0];
+            coretest_read_data = {16'h0000, ent_read_data};
+            coretest_error     = 1'b0;
           end
         
         default:
