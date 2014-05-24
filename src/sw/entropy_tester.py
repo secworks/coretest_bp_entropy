@@ -182,6 +182,9 @@ def read_word(prefix, addr, ser):
 # read_rng1_rng2()
 #-------------------------------------------------------------------
 def read_rng1_rng2(ser):
+    if VERBOSE:
+        print "Reading rng1 and rng2 three times."
+    
     for i in range(3):
         read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_RNG1_RNG2, ser)
 
@@ -190,7 +193,11 @@ def read_rng1_rng2(ser):
 # read_n_data()
 #-------------------------------------------------------------------
 def read_n_data(ser):
-    for i in range(10):
+    n = 10
+    if VERBOSE:
+        print "Reading n vector %d times." % n
+
+    for i in range(n):
         read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_N, ser)
 
 
@@ -198,7 +205,11 @@ def read_n_data(ser):
 # read_p_data()
 #-------------------------------------------------------------------
 def read_p_data(ser):
-    for i in range(10):
+    n = 10
+    if VERBOSE:
+        print "Reading p vector %d times." % n
+
+    for i in range(n):
         read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_P, ser)
 
 
