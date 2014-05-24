@@ -2,7 +2,7 @@
 //
 // coretest_bp_entropy.v
 // ---------------------
-// Top level module for the fpga entropy tester.
+// Top level module for the BP FPGA entropy source tester.
 //
 //
 // Author: Joachim Strombergson
