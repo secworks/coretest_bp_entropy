@@ -67,11 +67,11 @@ STOP_BITS = 1
 
 # Delay times.
 PROC_DELAY_TIME = 0.001
-COMM_DELAY_TIME = 0.01
+COMM_DELAY_TIME = 0.005
 
 
 # Verbose operation on/off
-VERBOSE = True
+VERBOSE = False
 
 # Memory map.
 SOC                   = '\x55'
@@ -80,6 +80,10 @@ READ_CMD              = '\x10'
 WRITE_CMD             = '\x11'
 
 UART_ADDR_PREFIX      = '\x00'
+UART_ADDR_NAME0       = '\x00'
+UART_ADDR_NAME1       = '\x01'
+UART_ADDR_TYPE        = '\x02'
+UART_ADDR_VERSION     = '\x03'
 UART_ADDR_BIT_RATE    = '\x10'
 UART_ADDR_DATA_BITS   = '\x11'
 UART_ADDR_STOP_BITS   = '\x12'
@@ -191,9 +195,11 @@ def read_rng1_rng2(ser):
 
 #-------------------------------------------------------------------
 # read_n_data()
+#
+# Note we do a lot of read ops here.
 #-------------------------------------------------------------------
 def read_n_data(ser):
-    n = 10
+    n = int(1E6)
     if VERBOSE:
         print "Reading n vector %d times." % n
 
@@ -211,6 +217,18 @@ def read_p_data(ser):
 
     for i in range(n):
         read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_P, ser)
+
+
+#-------------------------------------------------------------------
+# read_uart()
+#
+# We try to read from the uart to get some read ops working.
+#-------------------------------------------------------------------
+def read_uart(ser):
+        read_word(UART_ADDR_PREFIX, UART_ADDR_NAME0, ser)
+        read_word(UART_ADDR_PREFIX, UART_ADDR_NAME1, ser)
+        read_word(UART_ADDR_PREFIX, UART_ADDR_TYPE, ser)
+        read_word(UART_ADDR_PREFIX, UART_ADDR_VERSION, ser)
 
 
 #-------------------------------------------------------------------
@@ -239,18 +257,18 @@ def main():
         sys.exit(1)
 
     # Try and switch baud rate in the FPGA and then here.
-#    bit_rate_high = chr((BIT_RATE2 >> 8) & 0xff)
-#    bit_rate_low = chr(BIT_RATE2 & 0xff)
-#
-#    if VERBOSE:
-#        print("Changing to new baud rate.")
-#        print("Baud rate: %d" % BAUD_RATE2)
-#        print("Bit rate high byte: 0x%02x" % ord(bit_rate_high))
-#        print("Bit rate low byte:  0x%02x" % ord(bit_rate_low))
-#
-#    write_serial_bytes([SOC, WRITE_CMD, UART_ADDR_PREFIX, UART_ADDR_BIT_RATE,
-#                        '\x00', '\x00', bit_rate_high, bit_rate_low, EOC], ser)
-#    ser.baudrate=BAUD_RATE2
+    bit_rate_high = chr((BIT_RATE2 >> 8) & 0xff)
+    bit_rate_low = chr(BIT_RATE2 & 0xff)
+
+    if VERBOSE:
+        print("Changing to new baud rate.")
+        print("Baud rate: %d" % BAUD_RATE2)
+        print("Bit rate high byte: 0x%02x" % ord(bit_rate_high))
+        print("Bit rate low byte:  0x%02x" % ord(bit_rate_low))
+
+    write_serial_bytes([SOC, WRITE_CMD, UART_ADDR_PREFIX, UART_ADDR_BIT_RATE,
+                        '\x00', '\x00', bit_rate_high, bit_rate_low, EOC], ser)
+    ser.baudrate=BAUD_RATE2
 
     try:
         my_thread = threading.Thread(target=read_serial_thread, args=(ser,))
@@ -261,11 +279,13 @@ def main():
     my_thread.daemon = True
     my_thread.start()
 
+    # Test the communication by reading name etc from uart.
+#    read_uart(ser)
 
     # Perform RNG read ops.
-    read_rng1_rng2(ser)
+#    read_rng1_rng2(ser)
     read_n_data(ser)
-    read_p_data(ser)
+#    read_p_data(ser)
 
 
     # Exit nicely.
