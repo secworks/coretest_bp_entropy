@@ -71,7 +71,7 @@ COMM_DELAY_TIME = 0.01
 
 
 # Verbose operation on/off
-VERBOSE = False
+VERBOSE = True
 
 # Memory map.
 SOC                   = '\x55'
