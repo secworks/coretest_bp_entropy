@@ -2,10 +2,37 @@
 //
 // entropy.v
 // ---------
-// digital HW based entropy generator.
+// digital HW based entropy generator. 
 //
 //
-// (c) 2014, Berndt Paysan, Joachim Strömbergson
+// Author: Bernd Paysan, Joachim Strombergson
+// Copyright (c) 2014, Bernd Paysan, Secworks Sweden AB
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or 
+// without modification, are permitted provided that the following 
+// conditions are met: 
+// 
+// 1. Redistributions of source code must retain the above copyright 
+//    notice, this list of conditions and the following disclaimer. 
+// 
+// 2. Redistributions in binary form must reproduce the above copyright 
+//    notice, this list of conditions and the following disclaimer in 
+//    the documentation and/or other materials provided with the 
+//    distribution. 
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
+// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
+// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+// BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //======================================================================
 
@@ -21,7 +48,11 @@ module entropy(input wire          clk,
               );
 
   //----------------------------------------------------------------
+  // Symbolic names.
   //----------------------------------------------------------------
+  // Delay in cycles between sampling random values 
+  // and updating the debug port.
+  // Corresponds to about 1/10s with clock @ 50 MHz.
   parameter DELAY_MAX             = 32'h004c4b40;
 
   parameter ADDR_ENT_WR_RNG1      = 8'h00;
@@ -33,17 +64,23 @@ module entropy(input wire          clk,
 
   
   //----------------------------------------------------------------
+  // Registers.
   //----------------------------------------------------------------
   reg [7:0]    rng1, rng2; // must be inverse to each other
   reg [31 : 0] delay_ctr_reg;  
   reg [31 : 0] delay_ctr_new;  
   reg [7 : 0]  debug_reg;
 
+  
+  //----------------------------------------------------------------
+  // Wires.
+  //----------------------------------------------------------------
   wire [15:0] 	 p, n;
   reg [15 : 0] tmp_dread;
   
   
   //----------------------------------------------------------------
+  // Module instantiations.
   //----------------------------------------------------------------
   genvar i;
   generate
@@ -55,6 +92,7 @@ module entropy(input wire          clk,
 
   
   //----------------------------------------------------------------
+  // Concurrent assignments to connect output ports.
   //----------------------------------------------------------------
   assign dread = tmp_dread;
   assign debug = debug_reg;
@@ -101,7 +139,7 @@ module entropy(input wire          clk,
 
       if(cs & ~we)
         case(addr)
-	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = { rng1, rng2 };
+	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = {rng1, rng2};
 	  ADDR_ENT_RD_P:         tmp_dread = p;
 	  ADDR_ENT_RD_N:         tmp_dread = n;
           default:;
