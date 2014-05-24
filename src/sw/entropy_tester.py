@@ -84,6 +84,7 @@ UART_ADDR_BIT_RATE    = '\x10'
 UART_ADDR_DATA_BITS   = '\x11'
 UART_ADDR_STOP_BITS   = '\x12'
 
+BPENT_ADDR_PREFIX       = '\x10'
 BPENT_ADDR_WR_RNG1      = '\x00'
 BPENT_ADDR_WR_RNG2      = '\x01'
 BPENT_ADDR_RD_RNG1_RNG2 = '\x10'
@@ -170,24 +171,35 @@ def write_serial_bytes(tx_cmd, serialport):
 
 
 #-------------------------------------------------------------------
-# 
+# read_word()
 #-------------------------------------------------------------------
-def read_rng1_rng2():
-    pass
+def read_word(prefix, addr, ser):
+    cmd = [SOC, READ_CMD] + [prefix, addr] +  [EOC]
+    write_serial_bytes(cmd , ser)
 
 
 #-------------------------------------------------------------------
-# 
+# read_rng1_rng2()
 #-------------------------------------------------------------------
-def read_n_data():
-    pass
+def read_rng1_rng2(ser):
+    for i in range(3):
+        read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_RNG1_RNG2, ser)
 
 
 #-------------------------------------------------------------------
-# 
+# read_n_data()
 #-------------------------------------------------------------------
-def read_p_data():
-    pass
+def read_n_data(ser):
+    for i in range(10):
+        read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_N, ser)
+
+
+#-------------------------------------------------------------------
+# read_p_data()
+#-------------------------------------------------------------------
+def read_p_data(ser):
+    for i in range(10):
+        read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_RD_P, ser)
 
 
 #-------------------------------------------------------------------
@@ -240,9 +252,9 @@ def main():
 
 
     # Perform RNG read ops.
-    read_rng1_rng2()
-    read_n_data()
-    read_p_data()
+    read_rng1_rng2(ser)
+    read_n_data(ser)
+    read_p_data(ser)
 
 
     # Exit nicely.
