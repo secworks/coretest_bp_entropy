@@ -2,19 +2,12 @@
 # -*- coding: utf-8 -*-
 #=======================================================================
 #
-# hash_tester.py
-# --------------
-# This program sends several commands to the coretest_hashed subsystem
-# in order to verify the SHA-1, SHA-256 and SHA-512/x hash function
-# cores. The program will use the built in hash implementations in
-# Python to do functional comparison and validation.
+# entropy_tester.py
+# -----------------
+# Test SW for the FPGA entropy tester project.
 #
 # Note: This program requires the PySerial module.
 # http://pyserial.sourceforge.net/
-#
-# The single and dual block test cases are taken from the
-# NIST KAT document:
-# http://csrc.nist.gov/groups/ST/toolkit/documents/Examples/SHA_All.pdf
 #
 # 
 # Author: Joachim Strömbergson
@@ -55,7 +48,6 @@ import serial
 import os
 import time
 import threading
-import hashlib
 
  
 #-------------------------------------------------------------------
