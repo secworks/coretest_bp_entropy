@@ -65,13 +65,13 @@ BIT_RATE2  = int(50E6 / BAUD_RATE2)
 DATA_BITS = 8
 STOP_BITS = 1
 
+# Delay times.
+PROC_DELAY_TIME = 0.001
+COMM_DELAY_TIME = 0.01
+
 
 # Verbose operation on/off
 VERBOSE = False
-
-# Delay times we wait
-PROC_DELAY_TIME = 0.0001
-COMM_DELAY_TIME = 0.01
 
 # Memory map.
 SOC                   = '\x55'
