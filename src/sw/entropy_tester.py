@@ -280,13 +280,12 @@ def main():
     my_thread.start()
 
     # Test the communication by reading name etc from uart.
-#    read_uart(ser)
+    read_uart(ser)
 
     # Perform RNG read ops.
-#    read_rng1_rng2(ser)
+    read_rng1_rng2(ser)
+    read_p_data(ser)
     read_n_data(ser)
-#    read_p_data(ser)
-
 
     # Exit nicely.
     time.sleep(50 * COMM_DELAY_TIME)
