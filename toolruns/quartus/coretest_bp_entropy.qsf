@@ -82,12 +82,12 @@ set_instance_assignment -name IO_STANDARD "2.5 V" -to debug[7]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to debug[0]
 
 # Source files:
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bp_entropy/src/rtl/rosc.v
+set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bp_entropy/src/rtl/entropy.v
+set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bp_entropy/src/rtl/coretest_bp_entropy.v
 set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/uart/src/rtl/uart_core.v
 set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/uart/src/rtl/uart.v
 set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest/src/rtl/coretest.v
-set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bpaysan_entropy/src/rtl/rosc.v
-set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bpaysan_entropy/src/rtl/entropy.v
-set_global_assignment -name VERILOG_FILE //psf/Home/Sandbox/proj/cores/coretest_bpaysan_entropy/src/rtl/coretest_bp_entropy.v
-
-set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
