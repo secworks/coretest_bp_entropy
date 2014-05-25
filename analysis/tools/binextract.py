@@ -50,6 +50,7 @@ import os
 #-------------------------------------------------------------------
 # Verbose operation on/off
 VERBOSE = False
+NUM_BYTES = 2
 
 
 #-------------------------------------------------------------------
@@ -58,20 +59,29 @@ VERBOSE = False
 # Parse any arguments and run the tests.
 #-------------------------------------------------------------------
 def main():
-    num_bytes = 2
     file_name = sys.argv[1]
 
     with open(file_name, 'r') as my_file:
         for line in my_file:
-            byte0 = int(line[34 : 36], 16)
-            byte1 = int(line[32 : 34], 16)
+            my_bytes = []
 
-            if (num_bytes == 4):
-                byte2 = int(line[30 : 32], 16)
-                byte3 = int(line[28 : 30], 16)
+            if (NUM_BYTES == 4):
+                my_bytes.append(int(line[28 : 30], 16))
+                my_bytes.append(int(line[30 : 32], 16))
+
+            my_bytes.append(int(line[32 : 34], 16))
+            my_bytes.append(int(line[34 : 36], 16))
+
+            if VERBOSE:
+                print("Bytes extracted: ", end='')
+                for my_byte in my_bytes:
+                    print('0x%02x' % my_byte, end=' ')
+                print("")
+
             else:
-                print(chr(byte1), end='')
-                print(chr(byte0), end='')
+                for my_byte in my_bytes:
+                    print(chr(my_byte), end='')
+
 
 #-------------------------------------------------------------------
 # __name__
