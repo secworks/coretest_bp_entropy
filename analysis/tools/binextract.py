@@ -80,7 +80,7 @@ def main():
 
             else:
                 for my_byte in my_bytes:
-                    print(chr(my_byte), end='')
+                    os.write(1, bytes(chr(my_byte), 'latin_1'))
 
 
 #-------------------------------------------------------------------
