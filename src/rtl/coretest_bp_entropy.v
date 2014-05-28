@@ -86,7 +86,7 @@ module coretest_bp_entropy(
   reg           ent_we;
   reg [7 : 0]   ent_address;
   reg [31 : 0]  ent_write_data;
-  wire [15 : 0] ent_read_data;
+  wire [31 : 0] ent_read_data;
   wire [7 : 0]  ent_debug;
   
   
@@ -198,7 +198,7 @@ module coretest_bp_entropy(
             ent_we             = coretest_we;
             ent_address        = coretest_address[7 : 0];
             ent_write_data     = coretest_write_data[15 : 0];
-            coretest_read_data = {16'h0000, ent_read_data};
+            coretest_read_data = ent_read_data;
             coretest_error     = 1'b0;
           end
         
