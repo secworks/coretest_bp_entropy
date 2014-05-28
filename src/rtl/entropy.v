@@ -43,7 +43,7 @@ module entropy(input wire          clk,
                input wire          we,
                input wire [7:0]    addr,
                input wire [15:0]   dwrite,
-               output wire [15:0]  dread,
+               output wire [31:0]  dread,
                output wire [7 : 0] debug
               );
 
@@ -61,6 +61,7 @@ module entropy(input wire          clk,
   parameter ADDR_ENT_RD_RNG1_RNG2 = 8'h10;
   parameter ADDR_ENT_RD_P         = 8'h11;
   parameter ADDR_ENT_RD_N         = 8'h12;
+  parameter ADDR_ENT_MIX          = 8'h20;
 
   
   //----------------------------------------------------------------
@@ -70,13 +71,14 @@ module entropy(input wire          clk,
   reg [31 : 0] delay_ctr_reg;  
   reg [31 : 0] delay_ctr_new;  
   reg [7 : 0]  debug_reg;
-
+  reg [31 : 0] mix_reg;
+ 
   
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  wire [15:0] 	 p, n;
-  reg [15 : 0] tmp_dread;
+  wire [31 : 0] p, n;
+  reg [31 : 0] tmp_dread;
   
   
   //----------------------------------------------------------------
@@ -84,7 +86,7 @@ module entropy(input wire          clk,
   //----------------------------------------------------------------
   genvar i;
   generate
-    for(i=0; i<16; i=i+1) begin: tworoscs
+    for(i=0; i<32; i=i+1) begin: tworoscs
       rosc px(clk, nreset, rng1, rng2, p[i]);
       rosc nx(clk, nreset, rng1, rng2, n[i]);
     end
@@ -108,12 +110,14 @@ module entropy(input wire          clk,
 	  rng1          <= 8'h55;
 	  rng2          <= 8'haa;
           delay_ctr_reg <= 32'h00000000;
+          mix_reg       <= 32'h00000000;
           debug_reg     <= 8'h00;
         end 
       else 
         begin
           delay_ctr_reg <= delay_ctr_new;
-
+          mix_reg       <= n ^ p;
+          
           if (delay_ctr_reg == 32'h00000000)
             begin
               debug_reg <= n[7 : 0];
@@ -139,9 +143,10 @@ module entropy(input wire          clk,
 
       if(cs & ~we)
         case(addr)
-	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = {rng1, rng2};
+	  ADDR_ENT_RD_RNG1_RNG2: tmp_dread = {16'h0000, rng1, rng2};
 	  ADDR_ENT_RD_P:         tmp_dread = p;
 	  ADDR_ENT_RD_N:         tmp_dread = n;
+	  ADDR_ENT_MIX:          tmp_dread = mix_reg;
           default:;
          endcase
     end
