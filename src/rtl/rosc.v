@@ -37,7 +37,7 @@
 //======================================================================
 
 module rosc(clk, nreset, in1, in2, dout);
-   parameter l=8;
+   parameter l=2;
    input clk, nreset;
    input [l-1:0] in1, in2;
    output reg 	 dout;
