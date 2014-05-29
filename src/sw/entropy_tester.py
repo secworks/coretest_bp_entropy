@@ -94,6 +94,8 @@ BPENT_ADDR_WR_RNG2      = '\x01'
 BPENT_ADDR_RD_RNG1_RNG2 = '\x10'
 BPENT_ADDR_RD_P         = '\x11'
 BPENT_ADDR_RD_N         = '\x12'
+BPENT_ADDR_MIX          = '\x20'
+BPENT_ADDR_CONCAT       = '\x21'
 
 
 #-------------------------------------------------------------------
