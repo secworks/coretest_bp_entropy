@@ -62,6 +62,7 @@ module entropy(input wire          clk,
   parameter ADDR_ENT_RD_P         = 8'h11;
   parameter ADDR_ENT_RD_N         = 8'h12;
   parameter ADDR_ENT_MIX          = 8'h20;
+  parameter ADDR_ENT_CONCAT       = 8'h21;
 
   
   //----------------------------------------------------------------
@@ -72,6 +73,7 @@ module entropy(input wire          clk,
   reg [31 : 0] delay_ctr_new;  
   reg [7 : 0]  debug_reg;
   reg [31 : 0] mix_reg;
+  reg [31 : 0] concat_reg;
  
   
   //----------------------------------------------------------------
@@ -111,12 +113,14 @@ module entropy(input wire          clk,
 	  rng2          <= 8'haa;
           delay_ctr_reg <= 32'h00000000;
           mix_reg       <= 32'h00000000;
+          concat_reg    <= 32'h00000000;
           debug_reg     <= 8'h00;
         end 
       else 
         begin
           delay_ctr_reg <= delay_ctr_new;
           mix_reg       <= n ^ p;
+          concat_reg    <= {n[31 : 16] ^ n[15 : 0], p[31 : 16] ^ p[15 : 0]};
           
           if (delay_ctr_reg == 32'h00000000)
             begin
