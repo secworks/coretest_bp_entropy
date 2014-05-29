@@ -135,7 +135,7 @@ module entropy(input wire          clk,
                 default:;
 	      endcase
 	    end
-        end // else: !if(!nreset)
+        end
     end
 
   
