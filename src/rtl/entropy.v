@@ -127,13 +127,14 @@ module entropy(input wire          clk,
               debug_reg <= n[7 : 0];
             end
           
-	  if(cs & we) begin
-	    case(addr)
-	      ADDR_ENT_WR_RNG1: rng1 <= dwrite[15:8];
-	      ADDR_ENT_WR_RNG2: rng2 <= dwrite[7:0];
-              default:;
-	    endcase
-	  end
+	  if(cs & we) 
+            begin
+	      case(addr)
+	        ADDR_ENT_WR_RNG1: rng1 <= dwrite[15:8];
+	        ADDR_ENT_WR_RNG2: rng2 <= dwrite[7:0];
+                default:;
+	      endcase
+	    end
         end // else: !if(!nreset)
     end
 
