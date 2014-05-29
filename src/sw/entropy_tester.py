@@ -66,8 +66,8 @@ DATA_BITS = 8
 STOP_BITS = 1
 
 # Delay times.
-PROC_DELAY_TIME = 0.001
-COMM_DELAY_TIME = 0.005
+PROC_DELAY_TIME = 0.01
+COMM_DELAY_TIME = 0.05
 
 
 # Verbose operation on/off
@@ -199,7 +199,7 @@ def read_rng1_rng2(ser):
 # Note we do a lot of read ops here.
 #-------------------------------------------------------------------
 def read_n_data(ser):
-    n = int(1E6)
+    n = int(1E7)
     if VERBOSE:
         print "Reading n vector %d times." % n
 
@@ -286,6 +286,8 @@ def main():
     read_rng1_rng2(ser)
     read_p_data(ser)
     read_n_data(ser)
+
+    print "Done!"
 
     # Exit nicely.
     time.sleep(50 * COMM_DELAY_TIME)
