@@ -151,6 +151,7 @@ module entropy(input wire          clk,
 	  ADDR_ENT_RD_P:         tmp_dread = p;
 	  ADDR_ENT_RD_N:         tmp_dread = n;
 	  ADDR_ENT_MIX:          tmp_dread = mix_reg;
+	  ADDR_ENT_CONCAT:       tmp_dread = concat_reg;
           default:;
          endcase
     end
