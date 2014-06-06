@@ -222,6 +222,30 @@ def read_p_data(ser):
 
 
 #-------------------------------------------------------------------
+# read_mix_data()
+#-------------------------------------------------------------------
+def read_mix_data(ser):
+    n = 10
+    if VERBOSE:
+        print "Reading mix vector %d times." % n
+
+    for i in range(n):
+        read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_MIX, ser)
+
+
+#-------------------------------------------------------------------
+# read_concat_data()
+#-------------------------------------------------------------------
+def read_concat_data(ser):
+    n = 10
+    if VERBOSE:
+        print "Reading concat vector %d times." % n
+
+    for i in range(n):
+        read_word(BPENT_ADDR_PREFIX, BPENT_ADDR_CONCAT, ser)
+
+
+#-------------------------------------------------------------------
 # read_uart()
 #
 # We try to read from the uart to get some read ops working.
