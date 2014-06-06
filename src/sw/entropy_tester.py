@@ -201,7 +201,7 @@ def read_rng1_rng2(ser):
 # Note we do a lot of read ops here.
 #-------------------------------------------------------------------
 def read_n_data(ser):
-    n = int(1E7)
+    n = 10
     if VERBOSE:
         print "Reading n vector %d times." % n
 
@@ -312,6 +312,8 @@ def main():
     read_rng1_rng2(ser)
     read_p_data(ser)
     read_n_data(ser)
+    read_mix_data(ser)
+    read_concat_data(ser)
 
     print "Done!"
 
