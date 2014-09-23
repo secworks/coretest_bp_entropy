@@ -29,3 +29,4 @@ This FPGA system consists of the following components:
 - The coretest core
 
 There are pin assignments and clock defines for the TerasIC C5G board.
+
